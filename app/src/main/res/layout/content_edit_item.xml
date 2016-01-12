@@ -31,12 +31,25 @@
         android:layout_marginTop="121dp"
         android:text="@string/editText" />
 
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="date"
+        android:ems="10"
+        android:id="@+id/itemDate"
+        android:onClick="showDatePickerDialog"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/txtEditItem"
+        android:hint="Pick Reminder Date" />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Save"
         android:onClick="onSave"
         android:id="@+id/btnSave"
-        android:layout_centerVertical="true"
-        android:layout_alignStart="@+id/editText" />
+        android:layout_marginTop="62dp"
+        android:layout_below="@+id/itemDate"
+        android:layout_toEndOf="@+id/txtEditItem" />
+
 </RelativeLayout>
