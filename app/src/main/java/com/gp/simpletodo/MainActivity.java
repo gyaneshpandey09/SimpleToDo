@@ -16,6 +16,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+// A Simple Todo List, with custom adapter
+
 public class MainActivity extends AppCompatActivity {
     ArrayList<Item> items;
     CustomItemAdaptor itemsAdapter;
