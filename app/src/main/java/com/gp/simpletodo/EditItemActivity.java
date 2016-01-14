@@ -3,7 +3,9 @@ package com.gp.simpletodo;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,9 +16,10 @@ import android.widget.EditText;
 import java.util.Calendar;
 
 public class EditItemActivity extends AppCompatActivity {
+    static Item i;
     EditText editItem;
     static EditText itemDate;
-    static Intent data;
+    static Intent data = new Intent();
     String oldItemString;
     String newItemString;
     private final int REQUEST_CODE = 1;
@@ -28,6 +31,7 @@ public class EditItemActivity extends AppCompatActivity {
     // Item Table Columns
     private static final String KEY_ITEM_ID = "id";
     private static final String KEY_ITEM_TEXT = "text";
+    private static final String KEY_ITEM_DATE = "date";
 
 
     // Get singleton instance of database
@@ -43,7 +47,7 @@ public class EditItemActivity extends AppCompatActivity {
         editItem = (EditText)findViewById(R.id.editText);
         itemDate = (EditText)findViewById(R.id.itemDate);
 
-        Item i = (Item) getIntent().getSerializableExtra("item");
+        i = (Item) getIntent().getSerializableExtra("item");
 
         editItem.setText(i.getText());
         itemDate.setText(i.getDate());
@@ -64,11 +68,24 @@ public class EditItemActivity extends AppCompatActivity {
         editItem = (EditText)findViewById(R.id.editText);
         newItemString = editItem.getText().toString();
 
-        data = new Intent();
-        data.putExtra("oldItemString", oldItemString);
-        data.putExtra("newItemString", newItemString);
+        i.setText(newItemString);
+
+        data.putExtra("item", i);
+
+
 
         setResult(RESULT_OK, data); // set result code and bundle data for response
+
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_ITEM_TEXT, i.getText());
+        values.put(KEY_ITEM_DATE, i.getDate());
+        System.out.println("______________KEY_ITEM_DATE__________");
+        System.out.println("onSave KEY_ITEM_DATE : " + i.getDate());
+        System.out.println("onSave KEY_ITEM_TEXT : " + i.getText());
+        System.out.println("______________KEY_ITEM_DATE__________");
+        int rows = db.update(TABLE_ITEMS, values, KEY_ITEM_TEXT + " = ?", new String[]{oldItemString});
+
         finish(); // closes the activity, pass data to parent
     }
 
@@ -95,7 +112,8 @@ public class EditItemActivity extends AppCompatActivity {
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Set the date as the Date text
             String date = (month+1) + "/" + day + "/" + year;
-            data.putExtra("itemDate", date);
+            i.setDate(date);
+            System.out.println("onDateSet KEY_ITEM_DATE : " + i.getDate());
             itemDate.setText(date);
         }
     }

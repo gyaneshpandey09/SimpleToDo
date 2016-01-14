@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by v725218 on 1/6/16.
@@ -94,7 +93,7 @@ public class ItemsDatabaseHelper extends SQLiteOpenHelper {
         try {
             ContentValues values = new ContentValues();
             values.put(KEY_ITEM_TEXT, item.getText());
-            values.put(KEY_ITEM_DATE, item.getText());
+            values.put(KEY_ITEM_DATE, item.getDate());
 
             // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
             db.insertOrThrow(TABLE_ITEMS, null, values);
@@ -106,8 +105,8 @@ public class ItemsDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<Item> getAllItems() {
-        List<Item> items = new ArrayList<>();
+    public ArrayList<Item> getAllItems() {
+        ArrayList<Item> items = new ArrayList<>();
 
         // SELECT * FROM ITEMS
         String ITEMS_SELECT_QUERY =
@@ -122,7 +121,8 @@ public class ItemsDatabaseHelper extends SQLiteOpenHelper {
                 do {
                     Item newItem = new Item();
                     newItem.setText(cursor.getString(cursor.getColumnIndex(KEY_ITEM_TEXT)));
-                    newItem.setText(cursor.getString(cursor.getColumnIndex(KEY_ITEM_DATE)));
+                    newItem.setDate(cursor.getString(cursor.getColumnIndex(KEY_ITEM_DATE)));
+
                     items.add(newItem);
                 } while(cursor.moveToNext());
             }

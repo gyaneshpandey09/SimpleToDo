@@ -1,6 +1,5 @@
 package com.gp.simpletodo;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 // A Simple Todo List, with custom adapter
 
@@ -22,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Item> items;
     CustomItemAdaptor itemsAdapter;
     ListView lvItems;
-    int listPos;
+    public static int listPos;
     private final int REQUEST_CODE = 1;
 
     // Table Names
@@ -48,12 +46,17 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         readItems();
+
+        for (Item itm: items){
+            System.out.println("_____________From Main.onCreate_____________________________");
+            System.out.println(" Text : " + itm.getText());
+            System.out.println(" Date : " + itm.getDate());
+        }
+
         itemsAdapter = new CustomItemAdaptor(this, items);
         lvItems.setAdapter(itemsAdapter);
 
         setupListViewListener();
-        setupItemClickListener();
-
     }
 
     @Override
@@ -86,22 +89,6 @@ public class MainActivity extends AppCompatActivity {
         writeItems(i);
     }
 
-    //Method which listens to the click on an item and then launches an Edit Item Page
-    private void setupItemClickListener(){
-        lvItems.setOnItemClickListener(
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        listPos = position;
-                        Intent i = new Intent(MainActivity.this, EditItemActivity.class);
-                        i.putExtra("item", items.get(listPos));
-                        startActivityForResult(i, REQUEST_CODE);
-                    }
-
-                    ;
-                });
-    }
-
     //Method which listens to a long click to delete an item
     private void setupListViewListener(){
         lvItems.setOnItemLongClickListener(
@@ -120,15 +107,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void readItems(){
-        List<Item> items = databaseHelper.getAllItems();
-        this.items = new ArrayList<Item>();
-
-        for (Item item : items) {
-            this.items.add(item);
-            // do something
-            System.out.println("From DB : "+item.getText());
-            System.out.println("From DB : "+item.getDate().toString());
-        }
+        items = databaseHelper.getAllItems();
     }
 
     private void writeItems(Item item){
@@ -140,24 +119,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        String oldItemString = data.getExtras().getString("oldItemString");
-        String newItemString = data.getExtras().getString("newItemString");
-        String itemDate = data.getExtras().getString("itemDate");
+        Item it = (Item)data.getSerializableExtra("item");
 
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_ITEM_TEXT, newItemString);
-        values.put(KEY_ITEM_DATE, itemDate);
-        int rows = db.update(TABLE_ITEMS, values, KEY_ITEM_TEXT + "= ?", new String[]{oldItemString});
+        System.out.println("______________onActivityResult__________");
+        for(Item itm: items){
+            System.out.println("onSave KEY_ITEM_DATE : " + itm.getDate());
+            System.out.println("onSave KEY_ITEM_TEXT : " + itm.getText());
+            System.out.println("ListPOS : " + listPos);
+            System.out.println("______________onActivityResult__________");
+        }
 
-        items.set(listPos, new Item(newItemString, itemDate) );
+        items.set(listPos, it);
         itemsAdapter.notifyDataSetChanged();
     }
 
     //This method deletes the item from the List. It assumes that items are not duplicate.
     public void deleteItem(Item item){
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
-        db.delete(TABLE_ITEMS, KEY_ITEM_TEXT + "= ?", new String[]{item.getText()});
+        db.delete(TABLE_ITEMS, KEY_ITEM_TEXT + " = ?", new String[]{item.getText()});
     }
 
 }
