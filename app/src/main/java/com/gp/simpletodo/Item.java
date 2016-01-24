@@ -3,12 +3,13 @@ package com.gp.simpletodo;
 import java.io.Serializable;
 
 /**
- * Created by v725218 on 12/30/15.
+ * This is a POJO for each item on the TODO List
  */
 public class Item implements Serializable{
     private static final long serialVersionUID = 6177222050535318633L;
     private String text;//Name is also the description of the item for now.
     private String date;
+    private int position;
 
     public Item(String txt, String dt){
         this.text = txt;
@@ -30,6 +31,14 @@ public class Item implements Serializable{
     }
     public void setText(String str){
         text = str;
+    }
+
+    public int getPosition(){
+        return position;
+    }
+
+    public void setPosition(int pos){
+        this.position = pos;
     }
 
     public String getDate(){

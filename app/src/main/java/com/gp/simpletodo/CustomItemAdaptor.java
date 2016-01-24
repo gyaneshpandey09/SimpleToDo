@@ -3,6 +3,7 @@ package com.gp.simpletodo;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +29,9 @@ public class CustomItemAdaptor extends ArrayAdapter<Item> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
         // Get the list item for this position
         final Item i = values.get(position);
-        MainActivity.listPos = position;
 
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
@@ -42,27 +42,42 @@ public class CustomItemAdaptor extends ArrayAdapter<Item> {
         TextView itemName = (TextView) convertView.findViewById(R.id.itemText);
         TextView itemDate = (TextView) convertView.findViewById(R.id.itemDate);
 
-//        System.out.println("_____________From Adapter_____________________________");
-//        System.out.println(" Text : " + i.getText());
-//        System.out.println(" Date : " + i.getDate());
-
         // Populate the data into the template view using the data object
         itemName.setText(i.getText());
         itemDate.setText(i.getDate());
 
-
-        convertView.setOnClickListener(new View.OnClickListener(){
+        //Sets up a Click listener on each row of the list
+        convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent( context,EditItemActivity.class);
+                Intent intent = new Intent(context, EditItemActivity.class);
+                i.setPosition(position);
                 intent.putExtra("item", i);
-                ((Activity)context).startActivityForResult(intent, 1);
+                ((Activity) context).startActivityForResult(intent, 1);
+
+            }
+        });
+
+        //Sets up a Long Click listener on each row of the list
+        convertView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                deleteItem(values.get(position));
+                values.remove(position);
+                notifyDataSetChanged();
+                return true;
 
             }
         });
 
         // Return the completed view to render on screen
         return convertView;
+    }
+
+    //This method deletes the item from the List. It assumes that items are not duplicate.
+    public void deleteItem(Item item){
+        SQLiteDatabase db = MainActivity.databaseHelper.getWritableDatabase();
+        db.delete(MainActivity.TABLE_ITEMS, MainActivity.KEY_ITEM_TEXT + " = ?", new String[]{item.getText()});
     }
 
 }

@@ -10,7 +10,7 @@ import android.util.Log;
 import java.util.ArrayList;
 
 /**
- * Created by v725218 on 1/6/16.
+ * This Class helps with various DB calls.
  */
 public class ItemsDatabaseHelper extends SQLiteOpenHelper {
     // Database Info
@@ -19,7 +19,6 @@ public class ItemsDatabaseHelper extends SQLiteOpenHelper {
 
     // Table Names
     private static final String TABLE_ITEMS = "items";
-    private static final String TABLE_USERS = "users";
 
     // Post Table Columns
     private static final String KEY_ITEM_ID = "id";

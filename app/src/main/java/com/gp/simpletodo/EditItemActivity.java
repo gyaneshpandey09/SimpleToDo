@@ -71,19 +71,12 @@ public class EditItemActivity extends AppCompatActivity {
         i.setText(newItemString);
 
         data.putExtra("item", i);
-
-
-
         setResult(RESULT_OK, data); // set result code and bundle data for response
 
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_ITEM_TEXT, i.getText());
         values.put(KEY_ITEM_DATE, i.getDate());
-        System.out.println("______________KEY_ITEM_DATE__________");
-        System.out.println("onSave KEY_ITEM_DATE : " + i.getDate());
-        System.out.println("onSave KEY_ITEM_TEXT : " + i.getText());
-        System.out.println("______________KEY_ITEM_DATE__________");
         int rows = db.update(TABLE_ITEMS, values, KEY_ITEM_TEXT + " = ?", new String[]{oldItemString});
 
         finish(); // closes the activity, pass data to parent
@@ -109,11 +102,11 @@ public class EditItemActivity extends AppCompatActivity {
             return new DatePickerDialog(getActivity(), this, year, month, day);
         }
 
+
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Set the date as the Date text
             String date = (month+1) + "/" + day + "/" + year;
             i.setDate(date);
-            System.out.println("onDateSet KEY_ITEM_DATE : " + i.getDate());
             itemDate.setText(date);
         }
     }

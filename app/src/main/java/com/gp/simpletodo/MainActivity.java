@@ -24,14 +24,14 @@ public class MainActivity extends AppCompatActivity {
     private final int REQUEST_CODE = 1;
 
     // Table Names
-    private static final String TABLE_ITEMS = "items";
+    public static final String TABLE_ITEMS = "items";
 
     // Item Table Columns
     private static final String KEY_ITEM_ID = "id";
-    private static final String KEY_ITEM_TEXT = "text";
+    public static final String KEY_ITEM_TEXT = "text";
     private static final String KEY_ITEM_DATE = "date";
     // Get singleton instance of database
-    private ItemsDatabaseHelper databaseHelper;
+    static ItemsDatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +46,6 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         readItems();
-
-        for (Item itm: items){
-            System.out.println("_____________From Main.onCreate_____________________________");
-            System.out.println(" Text : " + itm.getText());
-            System.out.println(" Date : " + itm.getDate());
-        }
-
         itemsAdapter = new CustomItemAdaptor(this, items);
         lvItems.setAdapter(itemsAdapter);
 
@@ -92,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
     //Method which listens to a long click to delete an item
     private void setupListViewListener(){
         lvItems.setOnItemLongClickListener(
-
                 new AdapterView.OnItemLongClickListener() {
                     @Override
                     public boolean onItemLongClick(AdapterView<?> adapter, View item, int pos, long id) {
@@ -104,6 +96,27 @@ public class MainActivity extends AppCompatActivity {
 
                     ;
                 });
+    }
+
+    //Method which listens to a long click to delete an item
+    private void setupOnClickListener(){
+    lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, final View view,
+                                int position, long id) {
+            final String item = (String) parent.getItemAtPosition(position);
+            view.animate().setDuration(2000).alpha(0)
+                    .withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            items.remove(item);
+                            itemsAdapter.notifyDataSetChanged();
+                            view.setAlpha(1);
+                        }
+                    });
+        }
+    });
     }
 
     private void readItems(){
@@ -120,16 +133,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Item it = (Item)data.getSerializableExtra("item");
-
-        System.out.println("______________onActivityResult__________");
-        for(Item itm: items){
-            System.out.println("onSave KEY_ITEM_DATE : " + itm.getDate());
-            System.out.println("onSave KEY_ITEM_TEXT : " + itm.getText());
-            System.out.println("ListPOS : " + listPos);
-            System.out.println("______________onActivityResult__________");
-        }
-
-        items.set(listPos, it);
+        items.set(it.getPosition(), it);
         itemsAdapter.notifyDataSetChanged();
     }
 
